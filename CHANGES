@@ -1,0 +1,668 @@
+
+0.52.0 to 0.52.1:
+  
+  * Removed internal @(<>)@ format combinator that caused 
+    problems for GHC 7.4.
+  
+0.51.0 to 0.52.0:
+  
+  * Added limited support for adding SVG ids to text and 
+    Primitives.
+  
+  * Fixed types of @d2r@ and @r2d@ to Double for degrees, rather 
+    than a parametric (Real a, Floating a) type. Although this is
+    less general, it removes the burden of type annotating the 
+    common case.
+  
+  * Added the vector functions @orthoVec@, @vsum@ and @vdiff@ to 
+    @Core.Geometry@.
+  
+  * Re-named @clip@ to @clipPrimitive@
+  
+0.50.0 to 0.51.0:
+  
+  * Added special cases to handle continuity to the function 
+    @lineDirection@ in @Core.Geometry@.
+  
+  * Added @zeroVec@ to @Core.Geometry@.
+   
+  * Extended some Haddock documentation.
+  
+0.43.0 to 0.50.0:
+  
+  * Major change hence the version number jump - the notion of 
+    parametric unit has been removed from the @Picture@ objects 
+    (it for remains the @Geometric@ objects @Point2@, @Vec2@ etc.). 
+    Certain useful units, e.g. @em@ and @en@, are contextual on 
+    the \"current point size\", and having a parametric unit here 
+    was actually a hinderance to supporting units properly in 
+    higher-level layers. Now all Picture objects (those defined 
+    or exported from @Core.Picture@) are fixed to use Double 
+    - representing PostScript points. Higher level layers that 
+    intend to support alternative units must translate drawing 
+    objects to PostScript point measurements /before/ calling the 
+    Picture API. Geometric objects - objects defined in 
+    @Core.Geometry@, e.g. @Point2@, @Vec2@ - are still polymorphic 
+    on unit. 
+    
+  * Picture API change - Various function names changed.
+    @lineTo@ becomes @absLineTo@ and @curveTo@ becomes 
+    @absCurveTo@. The path builders are qualified with /Prim/, 
+    @vertexPath@ becomes @vertexPrimPath@, @vectorPath@ becomes 
+    @vectorPrimPath@, @emptyPath@ becomes @emptyPrimPath@ and 
+    @curvedPath@ becomes @curvedPrimPath@. @xlink@ becomes 
+    @xlinkPrim@.
+   
+  * API change - @PtSize@ data type replaced by @AfmUnit@ for font 
+    measurements.
+  
+  * API and representation change - clipping paths are represented
+    as @Primitive@ constructor rather than a @Picture@ constructor.
+    This should make them more useful. The type of the function 
+    @clip@ in @Core.Picture@ has likewise changed.
+  
+  * Picture API change - changed @primPath@ to @absPrimPath@, added
+    the functions @relPrimPath@, @relLineTo@, @relCurveTo@.
+   
+  * Added the class @Tolerance@ to @Core.Geometry@ and made the Eq 
+    instances of @Point2@, @Vec2@ and @BoundingBox@ tolerant. 
+    Tolerance accounts for a fairly lax equality on floating point 
+    numbers - it is suitable for Wumpus (printing) where high 
+    accuracy is needed.
+  
+0.42.1 to 0.43.0:
+  
+  * API change - the function @bezierCircle@ in @Core.Geometry@
+    has changed. It now implements a better method of drawing 
+    circles with Bezier curves and no longer needs the 
+    subvision factor. The old circle drawing function has been 
+    retained as @subdivisionCircle@ as it is useful for 
+    corroborating @bezierCircle@, but the general use of 
+    @subdivisionCircle@ should be avoided.
+   
+  * Added a function @bezierEllipse@ to @Core.Geometry@.
+
+0.42.0 to 0.42.1:
+
+  * Fixed bug in the @curvedPath@ function in @Core.Picture@
+    where the wrong relative point was being calculated for the 
+    second control point.
+
+  * Changed internals of the @EscapedText@ type so it supports 
+    efficient concatenation, and now has a Monoid instance.
+ 
+0.41.0 to 0.42.0:
+
+  * Removed the function @oboundingBox@ from @Core.BoundingBox@.
+    It was unused in Wumpus-Core and had unwise error handling 
+    baked-in.
+
+  * Renamed @direction@ in @Wumpus.Core.Geometry@, it is now 
+    @vdirection@.
+
+  * Fixed internal Foldable instances for JoinList. The left and
+    right folds worked in the wrong direction.
+
+  * Some improvements to the Haddock documentation. 
+
+0.40.0 to 0.41.0:
+
+  * Changed PostScript output to use pre-defined procedures for 
+    circles and ellipses. This should be a significant 
+    optimization for drawings that have many circles or ellipses.
+    For drawings that do not use circles or ellipses, it adds 
+    circa. 75 lines to the generated PostScript which is 
+    tolerable.
+
+  * API change - @Core.Text.Base@ no longer exports the 
+    constructor and field label for @EscapedText@, it is now an 
+    opaque type. For a building @EscapedText@ either the existing 
+    /safe/constructor @escapeString@ or the new function 
+    @wrapEscChar@ should be used. For destructing @EscapedText@ 
+    there is a new function @destrEscapedText@.
+
+  * API change - the argument order of the functions @rtextlabel@ 
+    and @rescapedlabel@ in @Core.Picture@ has changed. The order 
+    of angle of rotation and the baseline-left has been swapped so 
+    that angle of rotation is first. This matches the other 
+    rotated graphics in @Core.Picture@.
+
+  * Upper bounds of Cabal build depends relaxed a bit.
+ 
+  * Added the @UNil@ type to @Core.Geometry@ and added affine 
+    instances for the UNil type, plus Maybe and Pair. @UNil@ is
+    useful for higher-level drawing (it is used extensively in
+    Wumpus-Basic).
+
+  * Added the function @emptyPath@ to @Core.Picture@. This creates 
+    a /null path/ with an empty list of path segments. Null paths 
+    still need a start point - this is minimum needed for bounding 
+    box calculation. Improved the PostScript and SVG output so 
+    there is no code generated for empty paths and textlabels.
+
+  * Added @vectorPath@ to @Core.Picture@.
+
+  * Added @boundaryCenter@ to @Core.BoundingBox@.
+
+  * Improved generated SVG code generation for ellipses / circles.
+
+0.37.0 to 0.40.0: 
+
+  * Text handling substantially revised. SVG text output is now 
+    better aligned to Unicode. The encoding tables for PostScript
+    have been re-thought, the previous implementation had some 
+    serious design flaws that should now be rectified.
+
+  * The rules for escaping special characters has been clarified.
+    Previously the documentation suggested 
+    @ampersand-name-semicolon@ could be used to escape glyph names
+    however only @ampersand-hash-name-semicolon@ worked.
+    @ampersand-name-semicolon@ is now the correct way. The 
+    ampersand-hash prefix is for numeric literals - 
+    @ampersand-hash-num_literal-semicolon@.
+
+  * Versions of the textlabel functions have been added to 
+    @Core.Picture@ for escape-parsed text. It is useful for 
+    higher-level software to escape the text, do some calculations 
+    then render it - going back to un-escaped text for the 
+    rendering would be inefficient.
+
+  * The internal representation of paths has changed. They are now 
+    represented as start-point plus list of /relative/ path 
+    segments rather than start-point plus list of absolute path 
+    segments. Using relative path segments makes it cheaper to
+    move paths with @translate@, although calculating the bounding
+    box and rendering to PostScript is more expensive. The 
+    rationale for the change is that to make complex pictures, 
+    paths are potentially moved many times but the other 
+    operations are only performed once.
+
+  * Internal change to Primitives and the PrimCTM - ellipses and
+    labels no longer have a point (center or baseline left)
+    as an element in the datatype, the point is now represented 
+    within the PrimCTM.
+
+  * Name change to @Core.Picture@ API - the path construction 
+    function @path@ has been renamed to @primPath@.
+
+  * Name change in @Core.FontSize@, the function @textBoundsEnc@
+    has been renamed to @textBoundsEsc@. Wumpus-Core now calls 
+    strings that have been parsed for escape characters 
+    /Escaped Text/ rather than /Encoded Text/.
+
+  * Fixed bug where ellipse rotation and scaling calculated the 
+    wrong bounding box.
+ 
+  * Fixed bug in @illustrateControlPoints@ where the control points
+    were drawn but the original primitive was lost. 
+
+  * Added initial support for arbitrary SVG attributes (e.g. 
+    onmouseover handlers) via @annotateGroup@ in @Core.Picture@. 
+    Arbitrary SVG \"defs\" can be written into the defs prologue 
+    by using @writeSVG_defs@ instead of @writeSVG@. This 
+    functionality is mostly untested!
+
+0.36.0 to 0.37.0:
+
+  * The bounding box constructors have been renamed - @bbox@ is 
+    now @boundingBox@ and @obbox@ becomes @oboundingBox@. The 
+    rationale for this change is that the names very cryptic in 
+    the first place and the constructors are used infrequently 
+    when @bbox@ in particular makes a descriptive variable name.
+
+  * Changes to the Picture and Primitive types to enable better
+    concatenation which is used heavily by Wumpus-Basic. The 
+    Picture API exposes a new function @primCat@.
+
+  * SVG /font delta context/ change - font deltas are now 
+    annotated on Primitives not Pictures. The type of the 
+    function @fontDeltaContext@ in @Core.Picture@ has changed 
+    accordingly.
+
+  * SVG hyperlink change - hyperlinks no longer group primitives
+    (although a group of primitives can be hyperlinked). The 
+    function @xlinkGroup@ has been removed from @Core.Picture@, 
+    it is replaced by @xlink@.
+
+  * @Core.Picture@ - the argument order for the function 
+    @rtextlabel@ has been changed, the positions of the angle and 
+    bottom-left corner have been swapped.
+
+0.35.0 to 0.36.0:
+
+  * API / behaviour change - rotation on primitives changed. New 
+    functions have been added to create rotated text labels and 
+    ellipses (@rtextlabel@, @rstrokeEllipse@, etc.), and 
+    Primitives have been made instances of the Affine classes
+    except for the general matrix Transform class. The old
+    functions for transforming Primitives (@rotatePrim@, 
+    @scalePrim@, etc.) have been removed. The demos (Rotated.hs,
+    Scaled.hs, Translated.hs) have been removed as they pertain 
+    to the old behaviour, there are new demos highlighting the
+    new behaviour (TransformEllipse.hs, etc.).
+
+  * Major change - removed the PrimElement type. The (opaque) 
+    Primitive type has been changed to incorporate a grouping 
+    constructor equivalent to PrimElement\'s @XLinkGroup@ 
+    contructor. The change has made the implementation of SVG 
+    hyperlinks more efficient, but has forced various type 
+    signatures to change in @Core.Picture@. Client code will 
+    also have to change type signatures - @PrimElement@ becomes
+    @Primitive@.
+
+  * @Core.PtSize@ - the class @FromPtSize@ has been given a @Num@
+    superclass constraint. This can shorten type signatures of 
+    functions that use @fromPtSize@.
+
+  * Corrected a bug where textlabels would generate an invalid
+    bounding box and cause a runtime error when supplied with an
+    empty string. Now there is no runtime error - and /no-ops/ 
+    are generated in the output.
+
+  * Internal changes - moved @PrimCTM@ from @Core.PictureInternal@
+    into separate module. Moved /utility/ modules into their own 
+    directory @Utils@. Move /text/ modules into their own 
+    directory @Text@. 
+
+  * Removed dependency on @algebra@ for @Semigroup@. The 
+    equivalent @append@ operation on @BoundingBox@ is 
+    @boundaryUnion@.
+
+  * Renamed the @Core.GraphicsState@ to @Core.GraphicProps@. 
+    Moved the property datatypes from @Core.PictureInternal@ into 
+    @Core.GraphicProps@ (StrokeProps, LabelProps, etc.).
+
+  * Moved @wumpus_default_font@ from @Core.Picture@ into 
+    @Core.Graphic.Props@.
+
+  * Haddock docs improved.
+
+0.34.0 to 0.35.0:
+
+  * Bug fix - PostScript output - when more than one stroke 
+    property changed the changes were concatenated without 
+    a separator. This generated invalid PostScript. Now fixed.
+
+  * Documentation updates to the guide and the Haddock docs.
+
+0.33.0 to 0.34.0:
+
+  * Clipping paths fixed. Previously they did not work for SVG or
+    PostScript.
+
+  * @picOver@ fixed. Drawing order was changed in version 0.33.0, 
+    but @picOver@ was not updated accordingly (so it actually 
+    started drawing pictures /under/). It now works correctly.
+
+  * The lexer for escape characters embedded in label strings has 
+    been rewritten. It now supports octal and hexadecimal codes.
+  
+
+0.32.0 to 0.33.0:
+
+  * Major change - reworked support for text encoding. Encoding 
+    maps are now linked with fonts - it was spotted that the 
+    Symbol font does not use the Latin1 names. The @TextEncoder@ 
+    data type has been changed and there is a new @FontEncoder@ 
+    data type. There are also new modules for the Symbol Font 
+    encoder table and for the /Default Encoder/ which 
+    accommodates both Latin1 and the Symbol font. This has also 
+    mandated changes to the @FontFace@ data type.
+ 
+  * Major change - the printing order has been changed. The first 
+    element in a @frame@ of Prims is draw first. This means it 
+    appears first in the output file (this makes sense) - it also 
+    means it is at the back in the Z-Order. This latter point 
+    might not be so intuitive, but changing the printing order at 
+    least makes Wumpus-Core match SVG and PostScript.
+
+  * Changed the visiblity of the new colours (yellow, cyan, 
+    magenta) to be hidden at the top level. They can be exposed
+    by importing @Wumpus.Core.Colour@. 
+
+  * @Wumpus.Core.FontSize@ - added @spacerWidth@ function.
+
+0.31.0 to 0.32.0:
+
+  * Major API changes to @Core.Picture@ for XML hyperlinks.
+    Hyperlinks now group one-or-more Primitives (path or label), 
+    instead of being attached to a single Primitive. This better
+    corresponds with XML but it has made the Picture type more 
+    complicated, and has mandated significant changes to the 
+    Picture API. All the hyperlink variants of the Primitive 
+    constructors have been removed (xcstroke, xfill, xtextlabel, 
+    ...), and hyperlinks are now created with @xlinkGroup@. 
+
+  * The type signatures for the /primitive/ constructors (fill, 
+    cstroke, textlabel, ...) in the Picture API have changed and 
+    are now more complicated as there is an extra layer of 
+    indirection in the type hierarchy.
+
+  * The primitive constructors for filled and stroked paths and 
+    ellipses have been renamed: @bordered@ is now @fillStroke@,
+    @borderedEllipse@ is now @fillStrokeEllipse@.
+
+  * @Core.FontSize@ - the arguments to the function @textBounds@
+    have been changed to take the String in question, rather than 
+    its precomputed length. The size of the string is then 
+    calculated with the new function @charCount@ which takes into 
+    account escaped characters.
+
+  * Added @yellow@, @cyan@ and @magenta@ to the predefined 
+    colours in @Core.Colour@.
+
+0.30.0 to 0.31.0:
+
+  * Extended the label type to optionally handle horizontal
+    or vertical \"kerning\". This can be efficiently implemented 
+    in SVG.
+
+  * Major API change - the Primitive constructors defined in 
+    @Core.PictureLanguage@ are no longer overloaded (@cstroke@, 
+    @ostroke@, @fill@, @textlabel@, @ellipse@). The respective 
+    classes (@Stroke@, @TextLabel@, @Ellipse@) have been removed
+    and the constructors now have monomorphic types. This is 
+    because Wumpus-Core now only has one colour type and stroke
+    attributes are now a single type, so polymorphism became
+    less useful (and the simplicity of monomorphic types became
+    more favourable). @ellipse@ is no longer a constructor 
+    instead there variants @fillEllipse@ and @strokeEllipse@.
+
+  * Added support for /bordered/ closed paths - i.e. paths that
+    are both stroked and filled. These can be efficiently drawn 
+    in SVG with a single @path@ element.
+
+  * Changed StrokeAttr representation to be a regular data type
+    rather than a list of /deltas/ - i.e. differences to the 
+    graphics state.
+
+  * Added SVG font attribute /delta optimizations/ to help reduce 
+    SVG code size - via the @fontDeltaContext@ function in 
+    @Core.Picture@. This functionality was partially inplemented 
+    in the last release using the @GSUpdate@ datatype - this 
+    datatype it is now called @FontCtx@.
+
+  * Some internal work documenting text encoding.
+
+0.23.0 to 0.30.0:
+
+  * Substantial changes - the output machinery has been heavily 
+    modified, the intention was to reduce the use of matrix 
+    transformations in SVG output. Though this goal has not been 
+    achieved, some code-size improvements in the SVG output have 
+    been made. 
+
+  * The code generation monads have been changed - Wumpus no 
+    longer uses a writer monad for code generation, but it will
+    keep the Wumpus name.
+
+  * Added support for hyperlinks in the SVG output.
+
+  * Improved internal pretty printing and added the function 
+    @printPicture@ for debugging.
+
+  * The @Core.Colour@ module has been simplified to support just 
+    one (new) type - RGBi, and the conversion type class 
+    @PSColour@ has been eliminated.
+
+  * @Core.Picture@ - the type of the @frame@ function has been 
+    changed to take a list of Primitives rather than a single 
+    Primitive. The function @frameMulti@ which previously 
+    provided this functionality has been removed. SVG hyperlinks
+    are now supported for Primitives. 
+ 
+  * The default font size has been changed to 14 pt. 
+
+  * The Path datatype has been renamed PrimPath, likewise Ellipse 
+    is now PrimEllispe and Label becomes PrimLabel.
+
+  * @Core.Geometry@ now longer defines an affine frame datatype.
+
+  * @Core.BoundingBox@ module changed significantly. The corner 
+    functions (@boundaryBottomLeft@, etc.) have been removed, 
+    along with the plane functions (@leftPlane@, etc.). Some 
+    functions have been given more verbose names - @corners@ is 
+    now @boundaryCorners@, @within@ is now @withinBoundary@ and 
+    @union@ is now @boundaryUnion@. 
+
+0.22.0 TO 0.23.0:
+ 
+  * @Basic.GraphicsState@ - extracted the font face fields from 
+    @FontAttr@ datatype into a separate datatype @FontFace@.
+ 
+  * Added @PtSize@ a numeric type wrapping Double. This is 
+    specifically for text size calculations, vis the 
+    @Core.FontSize@ module.
+
+  * Changed all functions in @Core.FontSize@ to return @PtSize@
+    instead of a polymorphic type @u@ (where @u@ is an instance 
+    of Fractional). To get to another unit type rather than 
+    FontSize use an explicit conversion that scales the value 
+    accordingly.
+
+  * Added FromPtSize class constraints to various functions in
+    @Core.Picture@.
+
+  * Added @charWidth@ to @Core.FontSize@.
+
+  * Added @vlength@ to @Core.Geometry@
+
+0.21.0 to 0.22.0:
+
+  * Moved the deprecated module @Wumpus.Extra.PictureLanguage@
+    into the package Wumpus-Basic along with the example 
+    @Picture.hs@.
+
+  * Added vec as a synonym for the constructor V2.
+
+  * Changed some of the Core.FontSize to use better terminology. 
+    Thus some of the constants have changed. Added a new example
+    @FontMetrics.hs@ to illustrate how FontSize works. 
+    Particularly, the function @capHeight@ has been replaced with
+    the function @numeralHeight@ which has better semantics.
+
+  * The CTM data type and ToCTM class are now hidden in the
+    top-level import module @Wumpus.Core@. They can be accessed
+    by importing @Wumpus.Core.GraphicsState@ directly.
+
+  * Exposed the PSUnit type class. 
+
+0.20.0 to 0.21.0:
+
+  * Removed the Primitive instances of the Affine transformation 
+    classes. They have been replaced with special transformation 
+    functions: @rotatePrimitive@, @scalePrimitive@, 
+    @translatePrimitive@. As Primitives are not in an affine 
+    frame until they are lifted to Pictures the affine instances 
+    had ill-conceived semantics.
+
+  * Due to changes to accommodate the new non-affine  
+    transformations, many of the class obligations have changed 
+    on the @unit@ of Pictures, Primitives, Bounding Boxes etc. 
+    Generally many class contexts that previously required 
+    Fractional and Ord on the unit have changed to Real and 
+    Floating.
+
+  * Removed demo/AffineTest04.hs - there is no longer a 
+    @rotateAbout@ operation on Primitives as they do not exist 
+    in an affine frame until they they are lifted to Pictures.
+    Added - Scaled.hs, Rotated.hs, Translated,hs.
+ 
+  * Removed the UndecidableInstances pragma from 
+    Core.PictureInternal. It looks like Core.Geometry will always 
+    needs UndecidableInstances though.
+
+  * Removed the Ord superclass constriant from the @Stroke@ and
+    @Fill@ classes and derived operations (e.g. @zostroke@).
+
+0.19.0 to 0.20.0:
+  
+  * Removed the modules:
+    (1) Wumpus.Extra.SafeFonts
+    (2) Wumpus.Extra.SVGColours@
+    (3) Wumpus.Extra.X11Colours 
+    - they are now in the package @wumpus-basic@.
+  
+  * Removed the example FontPic.hs to @wumpus-basic@.
+  
+  * Renamed some functions in Core.BoundingBox: 
+    (1) @trace@ changed to @traceBoundary@, (2) @retrace@ 
+    changed to @retraceBoundary@.
+   
+  * Fixed bug with @picOver@, previously the zorder was wrong 
+    and the function was actually working as /picUnder/. 
+  
+  * Added @capHeight@ to FontSize - get the size of an upper 
+    case letter without ascenders of descenders.
+  
+  * Guide updated regarding the new package @wumpus-basic@.
+  
+0.18.0 to 0.19.0:
+  
+  * Added @Transform@ type class to apply a matrix transformation
+    directly.
+  
+  * Changed the ordering of picture drawing in PostScript and SVG
+    output so the list gets drawn from tail to head with right 
+    folds. This makes the list order of pictures match their 
+    zorder.
+  
+  * Renamed the function @withinBB@ (Core.BoundingBox) to 
+    @within@.
+  
+  * On many type signatures with e.g. Points, I\'ve changed the 
+    parameter name on the type constructor from @a@ to @u@.
+    This is to indicate that @u@ is some unit - almost always a
+    Double. e.g @Point2 a@ becomes @Point2 u@ and all the class
+    obligations change lexically as well @Floating a =>@ to 
+    @Floating u =>@. Superficially this means a lot of type 
+    signatures have diffs but haven\'t really changed. 
+  
+  * Added function @bezierCircle@ to generate the Bezier curve 
+    points for arcs describing a circle.
+  
+  * Added new demo - MultiPic. The PostScript it generates
+    is efficient - no extraneous use of @concat@. 
+  
+  * Added wumpus_default_font constant.
+
+
+0.17.0 to 0.18.0:
+  
+  * Added instances of the affine operation classes (Scale, 
+    Rotate ...) for Primitives (path, text label, ellipse).
+
+  * Added some picture composition functions to Core.Picture.
+    These are useful for testing where the type class 
+    complications of Extra.PictureLanguage are an overhead.  
+
+  * Added iRGB to Core.Colour - create RGB colours with 
+    integer components [0..255] - and iHSB, iGrey.
+
+  * Added some test modules for the affine transformations.
+    These illustrate a quirk in Wumpus where, under affine 
+    transformation, Pictures may generate a larger bounding box 
+    than composite primitives.
+
+  * Minor change - ztextlabal changed to use 24pt type rather 
+    than 12pt. 
+
+  * Corrected the cabal file to include the correct files for 
+    the manual. The Haskell source file @WorldFrame.hs@ was 
+    missing with the generated file @WorldFrame.eps@ incorrectly 
+    included instead.
+
+0.16.0 to 0.17.0:
+  
+  * Added Core.WumpusTypes to export opaque versions of
+    datatypes from Core.PictureInternal. This should make
+    the Haddock documentation more cohesive.
+   
+  * Moved the Core.PictureLanguage module into the Extra
+    namespace (Extra.PictureLanguage). This module may change
+    in detail, if not in spirit in the future as I'm not 
+    very happy with it. Also this module is somewhat 
+    \"higher-level\" than the modules in wumpus-core, so 
+    a different home seems fitting. 
+   
+  * Removed CardinalPoint and boundaryPoint from BoundingBox.
+  
+  * Argument order of 'textlabel' and 'ztextlabel' changed so
+    that Point2 is the last argument.
+  
+  * PathSegment constructor names changed - this is an internal
+    change as the constructors are not exported.
+  
+  * Primitive type changed - moved Ellipse properties into 
+    PrimEllipse type - internal change.
+  
+  * Removed dependency on \'old-time\'.
+
+0.15.0 to 0.16.0:
+
+  * Additions to Core.Geometry (direction, pvec, vangle, 
+    circularModulo).
+
+  * Fixed error with langle due to not accounting for circle 
+    quadrants in Core.Geometry.
+
+  * Point2 now derives Ord - so it can be used as a key for
+    Data.Map.
+
+  * Added escape-character handling to text output in PostScript.
+    This was causing a nasty bug where a drawing would completely
+    fail when special chars shown (GhostView gives little hint of 
+    what is wrong when such errors are present).
+ 
+  * Changed BoundingBox operation 'corners' to return a 4-tuple
+    rather than a list.
+  
+  * Added centeredAt to PictureLanguage
+
+
+0.14.0 to 0.15.0:
+
+  * Added Named colours and "safe fonts" from wumpus-extra.
+  
+  * Added wumpus_core_version to track version number.
+
+0.13.1 to 0.14.0:
+
+  * Added draft user guide. 
+  
+  * Argument order changed for @ellipse@ and @zellispe@ in
+    Wumpus.Core.Picture. 
+  
+  * Removed dependency on Data.Aviary.
+  
+  * Removed DList dependency.
+
+0.13.0 to 0.13.1:
+
+  * Wumpus.Core.SVG changed path_s to path_c - \'S\' was the 
+    wrongSVG command to match PostScript\'s @curveto@.
+
+0.12.0 to 0.13.0:
+
+  * More Haddock documenting. 
+
+  * @lowerLeftUpperRight@ removed from "Wumpus.Core.BoundingBox".
+
+  * Added range checking and Ord obligation t to the @bbox@ 
+    \'smart\' constructor.
+
+  * Numeric instances for "Wumpus.Core.Colour" improved.
+
+  * MatrixMult type class simplified
+
+  * Dash Pattern made a list of on-off pairs rather than just a 
+    list 
+
+  * The modules - Wumpus.Core.PictureInternal, Wumpus.Core.PostScript,
+    Wumpus.Core.SVG & Wumpus.Core.Utils - are no longer exposed.
+
+  * Various operators in "Wumpus.Core.PictureLanguage" changed.
+
+  * Wumpus.Core.TextEncoding split into an internal and a public 
+    module (internal - Wumpus.Core.TextEncodingInternal, public - 
+    Wumpus.Core.TextEncoder).
