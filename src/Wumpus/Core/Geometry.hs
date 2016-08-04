@@ -526,7 +526,7 @@ zeroVec = V2 0 0
 --
 -- > [ V2 2 2, vvec 4, hvec 4, V2 2 2 ]
 --  
-vec :: Num u => u -> u -> Vec2 u
+vec :: u -> u -> Vec2 u
 vec = V2
 
 
@@ -755,8 +755,7 @@ translationMatrix x y = M3'3 1 0 x
 -- >       sin(a)   cos(a)  0
 -- >       0        0       1 )
 --
-rotationMatrix :: (Floating u, Real u) 
-               => Radian -> Matrix3'3 u
+rotationMatrix :: Floating u => Radian -> Matrix3'3 u
 rotationMatrix a = M3'3 (cos ang) (negate $ sin ang) 0 
                         (sin ang) (cos ang)          0  
                         0         0                  1
@@ -778,7 +777,7 @@ rotationMatrix a = M3'3 (cos ang) (negate $ sin ang) 0
 -- (T being the translation matrix, R the rotation matrix and
 -- T^-1 the inverse of the translation matrix).
 --
-originatedRotationMatrix :: (Floating u, Real u) 
+originatedRotationMatrix :: Floating u
                          => Radian -> (Point2 u) -> Matrix3'3 u
 originatedRotationMatrix ang (P2 x y) = mT * (rotationMatrix ang) * mTinv
   where
@@ -1049,7 +1048,7 @@ bezierArc r ang1 ang2 pt = (p0,p1,p2,p3)
 -- Haskell implementation and the generated PostScript code. This
 -- function is retained for completeness and testing.
 --
-subdivisionCircle :: (Fractional u, Floating u) 
+subdivisionCircle :: Floating u
                   => Int -> u -> Point2 u -> [Point2 u]
 subdivisionCircle n radius pt = start $ subdivisions (n*4) (2*pi)
   where

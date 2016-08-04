@@ -41,7 +41,6 @@ import Wumpus.Core.Utils.FormatCombinators
 
 import Data.AffineSpace                         -- package: vector-space
 
-import Control.Applicative hiding ( empty, some )
 import Control.Monad
 
 import Data.Char

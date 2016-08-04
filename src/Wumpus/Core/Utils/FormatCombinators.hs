@@ -70,7 +70,6 @@ module Wumpus.Core.Utils.FormatCombinators
     
   ) where
 
-import Data.Monoid
 import Numeric
 
 -- | Doc is a Join List ...

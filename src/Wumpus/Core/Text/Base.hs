@@ -83,7 +83,6 @@ import Wumpus.Core.Utils.HList
 
 import Data.Char
 import qualified Data.IntMap as IntMap
-import Data.Monoid
 
 -- | Internal string representation for Wumpus-Core.
 -- 

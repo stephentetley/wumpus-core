@@ -50,7 +50,6 @@ import Wumpus.Core.Utils.JoinList
 
 import Data.AffineSpace                         -- package: vector-space
 
-import Control.Applicative hiding ( empty, some )
 import Data.Char
 import Data.List ( mapAccumL )
 import qualified Data.Map as Map
