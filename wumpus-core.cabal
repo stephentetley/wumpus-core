@@ -4,7 +4,7 @@ license:          BSD3
 license-file:     LICENSE
 copyright:        Stephen Tetley <stephen.tetley@gmail.com>
 maintainer:       Stephen Tetley <stephen.tetley@gmail.com>
-homepage:         http://code.google.com/p/copperbox/
+homepage:         https://github.com/stephentetley/wumpus-core
 category:         Graphics
 synopsis:         Pure Haskell PostScript and SVG generation. 
 description:
